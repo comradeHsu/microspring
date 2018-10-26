@@ -1,0 +1,6 @@
+rootProject.name = 'projects'
+
+include "spring-webmvc"
+include 'microspring-core'
+include 'microspring-context'
+
