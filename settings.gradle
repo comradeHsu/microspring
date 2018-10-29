@@ -1,6 +1,13 @@
-rootProject.name = 'projects'
 
-include "spring-webmvc"
+include "microspring-webmvc"
 include 'microspring-core'
 include 'microspring-context'
+include 'microspring-beans'
+
+
+rootProject.name = "microspring"
+rootProject.children.each {project ->
+    project.buildFileName = "${project.name}.gradle"
+}
+include 'microspring-context-support'
 

@@ -14,9 +14,9 @@ repositories {
 dependencies {
     testRuntime("javax.servlet:javax.servlet-api:4.0.1")
 //    compile(project(":spring-aop"))
-//    compile(project(":spring-beans"))
-//    compile(project(":spring-context"))
-//    compile(project(":spring-core"))
+    compile(project(":microspring-beans"))
+    compile(project(":microspring-context"))
+    compile(project(":microspring-core"))
 //    compile(project(":spring-expression"))
 //    compile(project(":spring-web"))
 //    optional(project(":spring-context-support"))  // for FreeMarker support
@@ -47,16 +47,16 @@ dependencies {
 //    optional("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
 //    optional("org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}")
 //    optional("org.reactivestreams:reactive-streams")
-    testCompile("javax.servlet:javax.servlet-api:4.0.1")
+    compile("javax.servlet:javax.servlet-api:4.0.1")
     testCompile("org.eclipse.jetty:jetty-servlet") {
         exclude group: "javax.servlet", module: "javax.servlet"
     }
     testCompile("org.eclipse.jetty:jetty-server") {
         exclude group: "javax.servlet", module: "javax.servlet"
     }
-    testCompile("org.apache.httpcomponents:httpclient:4.5.6") {
+    testCompile("org.apache.httpcomponents:httpclient:4.5.6") /*{
         exclude group: "commons-logging", module: "commons-logging"
-    }
+    }*/
     testCompile("commons-fileupload:commons-fileupload:1.3.3")
     testCompile("commons-io:commons-io:2.5")
     testCompile("joda-time:joda-time:2.10")
