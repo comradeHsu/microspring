@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    testRuntime("javax.servlet:javax.servlet-api:4.0.1")
+    compile("javax.servlet:javax.servlet-api:4.0.1")
 //    compile(project(":spring-aop"))
     compile(project(":microspring-beans"))
     compile(project(":microspring-context"))

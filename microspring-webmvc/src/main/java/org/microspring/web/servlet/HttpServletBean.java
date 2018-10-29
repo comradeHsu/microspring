@@ -34,24 +34,34 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 
         // Set bean properties from init parameters.
         PropertyValues pvs = new ServletConfigPropertyValues(getServletConfig(), this.requiredProperties);
-        if (!pvs.isEmpty()) {
-            try {
-                BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(this);
-                ResourceLoader resourceLoader = new ServletContextResourceLoader(getServletContext());
-                bw.registerCustomEditor(Resource.class, new ResourceEditor(resourceLoader, getEnvironment()));
-                initBeanWrapper(bw);
-                bw.setPropertyValues(pvs, true);
-            }
-            catch (BeansException ex) {
-                if (logger.isErrorEnabled()) {
-                    logger.error("Failed to set bean properties on servlet '" + getServletName() + "'", ex);
-                }
-                throw ex;
-            }
-        }
+//        if (!pvs.isEmpty()) {
+//            try {
+//                BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(this);
+//                ResourceLoader resourceLoader = new ServletContextResourceLoader(getServletContext());
+//                bw.registerCustomEditor(Resource.class, new ResourceEditor(resourceLoader, getEnvironment()));
+//                initBeanWrapper(bw);
+//                bw.setPropertyValues(pvs, true);
+//            }
+//            catch (BeansException ex) {
+//                if (logger.isErrorEnabled()) {
+//                    logger.error("Failed to set bean properties on servlet '" + getServletName() + "'", ex);
+//                }
+//                throw ex;
+//            }
+//        }
 
         // Let subclasses do whatever initialization they like.
         initServletBean();
+    }
+
+    /**
+     * Subclasses may override this to perform custom initialization.
+     * All bean properties of this servlet will have been set before this
+     * method is invoked.
+     * <p>This default implementation is empty.
+     * @throws ServletException if subclass initialization fails
+     */
+    protected void initServletBean() throws ServletException {
     }
 
     /**
