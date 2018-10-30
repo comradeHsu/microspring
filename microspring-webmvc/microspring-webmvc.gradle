@@ -18,7 +18,7 @@ dependencies {
     compile(project(":microspring-context"))
     compile(project(":microspring-core"))
 //    compile(project(":spring-expression"))
-//    compile(project(":spring-web"))
+    compile(project(":microspring-web"))
 //    optional(project(":spring-context-support"))  // for FreeMarker support
 //    optional(project(":spring-oxm"))
 //    optional("javax.servlet.jsp:javax.servlet.jsp-api:2.3.2-b02")

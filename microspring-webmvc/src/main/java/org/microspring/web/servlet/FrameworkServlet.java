@@ -1,6 +1,10 @@
 package org.microspring.web.servlet;
 
+import org.microspring.context.i18n.LocaleContext;
+import org.microspring.context.i18n.LocaleContextHolder;
 import org.microspring.util.StringUtils;
+import org.microspring.web.context.request.RequestAttributes;
+import org.microspring.web.util.NestedServletException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -155,5 +159,21 @@ public abstract class FrameworkServlet extends HttpServletBean{
             publishRequestHandledEvent(request, response, startTime, failureCause);
         }
     }
+
+    /**
+     * Subclasses must implement this method to do the work of request handling,
+     * receiving a centralized callback for GET, POST, PUT and DELETE.
+     * <p>The contract is essentially the same as that for the commonly overridden
+     * {@code doGet} or {@code doPost} methods of HttpServlet.
+     * <p>This class intercepts calls to ensure that exception handling and
+     * event publication takes place.
+     * @param request current HTTP request
+     * @param response current HTTP response
+     * @throws Exception in case of any kind of processing failure
+     * @see javax.servlet.http.HttpServlet#doGet
+     * @see javax.servlet.http.HttpServlet#doPost
+     */
+    protected abstract void doService(HttpServletRequest request, HttpServletResponse response)
+            throws Exception;
 
 }

@@ -10,4 +10,5 @@ rootProject.children.each {project ->
     project.buildFileName = "${project.name}.gradle"
 }
 include 'microspring-context-support'
+include 'microspring-web'
 
