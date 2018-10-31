@@ -2,14 +2,23 @@ package org.microspring.web.servlet;
 
 import org.microspring.context.i18n.LocaleContext;
 import org.microspring.context.i18n.LocaleContextHolder;
+import org.microspring.context.i18n.SimpleLocaleContext;
+import org.microspring.lang.Nullable;
 import org.microspring.util.StringUtils;
+import org.microspring.web.context.request.NativeWebRequest;
 import org.microspring.web.context.request.RequestAttributes;
+import org.microspring.web.context.request.RequestContextHolder;
+import org.microspring.web.context.request.ServletRequestAttributes;
+import org.microspring.web.context.request.async.CallableProcessingInterceptor;
+import org.microspring.web.context.request.async.WebAsyncManager;
+import org.microspring.web.context.request.async.WebAsyncUtils;
 import org.microspring.web.util.NestedServletException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.concurrent.Callable;
 
 public abstract class FrameworkServlet extends HttpServletBean{
 
@@ -161,6 +170,41 @@ public abstract class FrameworkServlet extends HttpServletBean{
     }
 
     /**
+     * Build a LocaleContext for the given request, exposing the request's
+     * primary locale as current locale.
+     * @param request current HTTP request
+     * @return the corresponding LocaleContext, or {@code null} if none to bind
+     * @see LocaleContextHolder#setLocaleContext
+     */
+    @Nullable
+    protected LocaleContext buildLocaleContext(HttpServletRequest request) {
+        return new SimpleLocaleContext(request.getLocale());
+    }
+
+    /**
+     * Build ServletRequestAttributes for the given request (potentially also
+     * holding a reference to the response), taking pre-bound attributes
+     * (and their type) into consideration.
+     * @param request current HTTP request
+     * @param response current HTTP response
+     * @param previousAttributes pre-bound RequestAttributes instance, if any
+     * @return the ServletRequestAttributes to bind, or {@code null} to preserve
+     * the previously bound instance (or not binding any, if none bound before)
+     * @see RequestContextHolder#setRequestAttributes
+     */
+    @Nullable
+    protected ServletRequestAttributes buildRequestAttributes(HttpServletRequest request,
+                                                              @Nullable HttpServletResponse response, @Nullable RequestAttributes previousAttributes) {
+
+        if (previousAttributes == null || previousAttributes instanceof ServletRequestAttributes) {
+            return new ServletRequestAttributes(request, response);
+        }
+        else {
+            return null;  // preserve the pre-bound RequestAttributes instance
+        }
+    }
+
+    /**
      * Subclasses must implement this method to do the work of request handling,
      * receiving a centralized callback for GET, POST, PUT and DELETE.
      * <p>The contract is essentially the same as that for the commonly overridden
@@ -175,5 +219,29 @@ public abstract class FrameworkServlet extends HttpServletBean{
      */
     protected abstract void doService(HttpServletRequest request, HttpServletResponse response)
             throws Exception;
+
+    /**
+     * CallableProcessingInterceptor implementation that initializes and resets
+     * FrameworkServlet's context holders, i.e. LocaleContextHolder and RequestContextHolder.
+     */
+    private class RequestBindingInterceptor implements CallableProcessingInterceptor {
+
+        @Override
+        public <T> void preProcess(NativeWebRequest webRequest, Callable<T> task) {
+            HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+            if (request != null) {
+                HttpServletResponse response = webRequest.getNativeResponse(HttpServletResponse.class);
+                initContextHolders(request, buildLocaleContext(request),
+                        buildRequestAttributes(request, response, null));
+            }
+        }
+        @Override
+        public <T> void postProcess(NativeWebRequest webRequest, Callable<T> task, Object concurrentResult) {
+            HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+            if (request != null) {
+                resetContextHolders(request, null, null);
+            }
+        }
+    }
 
 }
